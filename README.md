@@ -33,7 +33,7 @@ To run the Quantum Quant agent locally, follow these steps:
 
 1.  **Clone the Repository:**
     ```bash
-   git clone https://github.com/RutujaWaghmare-21/quantum-quant-agent.git
+    git clone https://github.com/RutujaWaghmare-21/quantum-quant-agent.git
     cd quantum-quant-agent
     ```
 
