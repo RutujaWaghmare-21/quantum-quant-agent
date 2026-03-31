@@ -33,7 +33,7 @@ To run the Quantum Quant agent locally, follow these steps:
 
 1.  **Clone the Repository:**
     ```bash
-    git clone [https://github.com/YOUR_USERNAME/quantum-quant-agent.git](https://github.com/YOUR_USERNAME/quantum-quant-agent.git)
+   git clone https://github.com/RutujaWaghmare-21/quantum-quant-agent.git
     cd quantum-quant-agent
     ```
 
@@ -58,7 +58,7 @@ To run the Quantum Quant agent locally, follow these steps:
 5. **gitclaw Agent Mode (SDK)**
    This repository is optimized for the gitclaw runtime. To run the agent via the SDK:
    ```bash
-   npx gitclaw run [github.com/YOUR_USERNAME/quantum-quant-agent](https://github.com/YOUR_USERNAME/quantum-quant-agent)
+   npx gitclaw run github.com/RutujaWaghmare-21/quantum-quant-agent
     ```
 ---
 
