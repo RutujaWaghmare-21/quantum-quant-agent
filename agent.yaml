@@ -1,27 +1,22 @@
----
+spec_version: "0.1.0"
 name: "Quantum Quant"
 version: "3.0.0"
-description: "A high-conviction autonomous quantitative trading agent bridging market data and AI reasoning."
 sdk: gitclaw
 
 # Identity & Behavior
-persona: ./SOUL.md
-rules: ./RULES.md
+persona: "./SOUL.md"
+rules: "./RULES.md"
 
-# Capabilities & Logic
-# gitclaw automatically indexes all .md files in these directories
-skills: ./skills/
-tools: ./tools/
+# Capabilities
+skills: "./skills/"
+tools: "./tools/"
 
-# Runtime Configuration
-config:
-  engine: nodejs
-  default_model: "openrouter/auto"
-  risk_levels: ["Alpha", "Beta", "Gamma"]
-  dependencies:
-    - express
-    - yahoo-finance2
-    - technicalindicators
-    - dotenv
-    - gitclaw
----
+# Model & Runtime
+model:
+  preferred: "openrouter:google/gemini-2.0-flash-001"
+
+runtime:
+  engine: "nodejs"
+  options:
+    timeout: 30000
+    retry_limit: 3
