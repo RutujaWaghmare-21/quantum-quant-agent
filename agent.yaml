@@ -1,0 +1,11 @@
+spec_version: "0.1.0"
+name: quantum-oracle-quant
+version: 1.0.0
+description: "A highly decisive, risk-aware quantitative trading agent that analyzes technical momentum."
+model:
+  preferred: meta-llama/llama-3-8b-instruct:free
+skills:
+  - technical-analysis
+tags:
+  - hackathon
+  - finance

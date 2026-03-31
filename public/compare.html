@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Compare | Multi-Asset Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] }, animation: { 'fade-in-up': 'fadeInUp 0.6s ease-out forwards' }, keyframes: { fadeInUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } } } } } }
+        if (localStorage.getItem('theme') === 'light' || (!('theme' in localStorage) && !window.matchMedia('(prefers-color-scheme: dark)').matches)) { document.documentElement.classList.remove('dark') } else { document.documentElement.classList.add('dark') }
+    </script>
+    <style>
+        .glass-panel { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; } .dark ::-webkit-scrollbar-thumb { background: #334155; }
+        .hidden-fade { opacity: 0; pointer-events: none; position: absolute; transform: scale(0.95); }
+        .visible-fade { opacity: 1; pointer-events: auto; position: relative; transform: scale(1); transition: all 0.4s ease; }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 bg-slate-50 dark:bg-[#050810] text-slate-900 dark:text-slate-100 relative font-sans transition-colors duration-500">
+
+    <div class="fixed inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] z-0 pointer-events-none"></div>
+
+    <div class="max-w-5xl mx-auto relative z-10">
+        <div class="flex justify-between items-center mb-10 animate-fade-in-up">
+            <div>
+                <h1 class="text-3xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-emerald-500 dark:from-blue-500 dark:to-emerald-400">MARKET COMPARISON</h1>
+                <p class="text-xs font-mono text-slate-500 uppercase mt-1">Multi-Asset Correlation</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleTheme()" class="p-2.5 rounded-full bg-white dark:bg-slate-800 border shadow-sm hover:scale-110 transition-transform">
+                    <svg id="theme-icon-sun" class="w-5 h-5 hidden dark:block text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4.22 3.22a1 1 0 011.415 0l.708.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM14.22 15.364a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0zM10 18a1 1 0 01-1-1v-1a1 1 0 112 0v1a1 1 0 01-1 1zm-4.22-3.22a1 1 0 01-1.415 0l-.708-.707a1 1 0 011.414-1.414l.707.707a1 1 0 010 1.414zM2 10a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm3.22-6.78a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0zM10 14a4 4 0 100-8 4 4 0 000 8z" clip-rule="evenodd"></path></svg>
+                    <svg id="theme-icon-moon" class="w-5 h-5 block dark:hidden text-slate-700" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                </button>
+                <a href="/" class="px-6 py-2.5 font-mono text-sm font-bold text-slate-800 dark:text-white bg-white dark:bg-slate-800 border rounded-lg hover:border-blue-500 shadow-sm transition">&larr; HOME</a>
+            </div>
+        </div>
+
+        <div class="glass-panel bg-white/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/50 rounded-2xl p-6 shadow-xl mb-8 animate-fade-in-up">
+            <form id="compare-form" class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <label class="block text-xs font-mono text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Target Assets (Comma Separated)</label>
+                    <input type="text" id="stocks-input" placeholder="e.g. AAPL, MSFT, GOOGL" required class="w-full bg-white dark:bg-[#0B0F19] border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3.5 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-mono shadow-inner uppercase">
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" id="submit-btn" class="w-full md:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 px-8 rounded-xl shadow-lg transition-transform hover:-translate-y-0.5">
+                        RUN COMPARISON
+                    </button>
+                </div>
+            </form>
+            <div id="error-msg" class="mt-4 p-4 bg-red-100/80 dark:bg-red-900/30 border border-red-300 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm font-mono text-center hidden"></div>
+        </div>
+
+        <div id="results-area" class="glass-panel bg-white/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/50 rounded-2xl p-8 shadow-2xl hidden-fade w-full">
+            <div class="relative h-80 w-full mb-8">
+                <canvas id="comparisonChart"></canvas>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-300 dark:border-slate-700 text-xs font-mono text-slate-500 dark:text-slate-400 uppercase">
+                            <th class="py-3 pr-4">Asset</th>
+                            <th class="py-3 px-4">Current ($)</th>
+                            <th class="py-3 px-4">6M Return</th>
+                            <th class="py-3 px-4">Volatility</th>
+                            <th class="py-3 pl-4 text-right">Sentiment</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="font-mono text-sm">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() { const html = document.documentElement; html.classList.toggle('dark'); localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light'); }
+        
+        let compareChart = null; // Store chart instance to destroy it before redrawing
+
+        document.getElementById('compare-form').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Stop page reload
+            
+            const btn = document.getElementById('submit-btn');
+            const originalText = btn.innerHTML;
+            const input = document.getElementById('stocks-input').value;
+            const errorMsg = document.getElementById('error-msg');
+            const resultsArea = document.getElementById('results-area');
+            const tableBody = document.getElementById('table-body');
+
+            // UI Loading State
+            btn.innerHTML = `<span class="flex items-center gap-2"><div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> PROCESSING...</span>`;
+            btn.classList.add('opacity-80', 'cursor-not-allowed');
+            errorMsg.classList.add('hidden');
+            resultsArea.classList.replace('visible-fade', 'hidden-fade');
+
+            try {
+                // Call our new Node.js Backend API
+                const response = await fetch('/compare', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ stocks: input })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    errorMsg.textContent = data.error;
+                    errorMsg.classList.remove('hidden');
+                } else {
+                    // 1. Fill the Table
+                    tableBody.innerHTML = '';
+                    data.forEach(stockData => {
+                        let colorClass = "text-amber-500";
+                        if(stockData.sentiment === "Positive") colorClass = "text-emerald-500";
+                        if(stockData.sentiment === "Negative") colorClass = "text-red-500";
+                        
+                        let returnColor = stockData.return_percent > 0 ? "text-emerald-500" : "text-red-500";
+
+                        const row = `
+                            <tr class="border-b border-slate-200 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/20 transition">
+                                <td class="py-4 pr-4 font-bold text-slate-800 dark:text-white">${stockData.stock}</td>
+                                <td class="py-4 px-4 text-slate-600 dark:text-slate-300">$${stockData.current}</td>
+                                <td class="py-4 px-4 ${returnColor}">${stockData.return_percent}%</td>
+                                <td class="py-4 px-4 text-slate-600 dark:text-slate-300">${stockData.risk}%</td>
+                                <td class="py-4 pl-4 text-right font-bold ${colorClass}">${stockData.sentiment}</td>
+                            </tr>
+                        `;
+                        tableBody.insertAdjacentHTML('beforeend', row);
+                    });
+
+                    // 2. Draw the Chart.js Graph
+                    const ctx = document.getElementById('comparisonChart').getContext('2d');
+                    if (compareChart) compareChart.destroy(); // Clear old graph
+
+                    const labels = data.map(d => d.stock);
+                    const returns = data.map(d => d.return_percent);
+                    const risks = data.map(d => d.risk);
+
+                    compareChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                { label: '6M Return (%)', data: returns, backgroundColor: 'rgba(16, 185, 129, 0.8)', borderRadius: 6 },
+                                { label: 'Risk / Volatility (%)', data: risks, backgroundColor: 'rgba(239, 68, 68, 0.8)', borderRadius: 6 }
+                            ]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            plugins: {
+                                legend: { labels: { color: '#94a3b8', font: { family: 'monospace' } } },
+                                tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)', titleFont: { family: 'monospace' }, bodyFont: { family: 'monospace' }, padding: 12, cornerRadius: 8 }
+                            },
+                            scales: {
+                                y: { grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { color: '#94a3b8', font: { family: 'monospace' } } },
+                                x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { family: 'monospace', weight: 'bold' } } }
+                            }
+                        }
+                    });
+
+                    // 3. Reveal the results!
+                    resultsArea.classList.replace('hidden-fade', 'visible-fade');
+                }
+            } catch (err) {
+                errorMsg.textContent = "Connection error. Please ensure the server is running.";
+                errorMsg.classList.remove('hidden');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.classList.remove('opacity-80', 'cursor-not-allowed');
+            }
+        });
+    </script>
+</body>
+</html>
