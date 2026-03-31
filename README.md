@@ -55,21 +55,21 @@ To run the Quantum Quant agent locally, follow these steps:
     node server.js
     ```
     *Open `http://localhost:3000` in your browser.*
-5. **gitclaw Agent Mode (Autonomous SDK)**
-    Quantum Quant is a "Clawless" compliant agent. This allows the repository to function as a standardized, pluggable AI definition that can be executed directly via the       gitclaw SDK.
+5.  **gitclaw Agent Mode (Autonomous SDK)**
+   * Quantum Quant is a "Clawless" compliant agent. This allows the repository to function as a standardized, pluggable AI        definition that can be executed directly via the**gitclaw SDK**.
 
     *🛠️ Quick Start (Agent Mode)
      To interact with the agent's brain directly through the terminal, follow the steps for your operating system:
 
-    * **Step 1: Set Environment Variable**
-    Replace "your_key" with your actual OpenRouter API key.
-    Windows (PowerShell):
-    ```bash
-    $env:OPENROUTER_API_KEY="your_key"
-    ```
-   Mac / Linux / Git Bash:
-   ```bash
-   export OPENROUTER_API_KEY="your_key"
+* **Step 1: Set Environment Variable**
+  Replace "your_key" with your actual OpenRouter API key.
+   Windows (PowerShell):
+  ```bash
+  $env:OPENROUTER_API_KEY="your_key"
+   ```
+  Mac / Linux / Git Bash:
+  ```bash
+  export OPENROUTER_API_KEY="your_key"
    ```
 * **Step 2: Run the Agent**
 You can run the agent locally from within the project folder or directly from GitHub:
