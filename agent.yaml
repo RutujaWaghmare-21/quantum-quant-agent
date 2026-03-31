@@ -1,35 +1,27 @@
 ---
-name: Quantum Quant
-version: 3.0.0
-description: "A high-conviction autonomous quantitative trading agent."
+name: "Quantum Quant"
+version: "3.0.0"
+description: "A high-conviction autonomous quantitative trading agent bridging market data and AI reasoning."
+sdk: gitclaw
 
-# Core Persona Reference
-persona:
-  file: ./SOUL.md
-  style: "Analytical, Decisive, Quantitative"
+# Identity & Behavior
+persona: ./SOUL.md
+rules: ./RULES.md
 
-# Registered Capabilities
-skills:
-  - name: market-analysis
-    path: ./skills/financial-analysis.md
-    tools:
-      - yahoo-finance2
-      - technicalindicators
-  - name: neural-synthesis
-    path: ./skills/neural-grid.md
-    provider: openrouter
+# Capabilities & Logic
+# gitclaw automatically indexes all .md files in these directories
+skills: ./skills/
+tools: ./tools/
 
-# Operational Constraints
+# Runtime Configuration
 config:
+  engine: nodejs
   default_model: "openrouter/auto"
   risk_levels: ["Alpha", "Beta", "Gamma"]
-  safety_protocol: ./RULES.md
-
-# Hardware/Runtime Requirements
-runtime:
-  engine: nodejs
-  version: ">=18.0.0"
   dependencies:
     - express
+    - yahoo-finance2
+    - technicalindicators
     - dotenv
+    - gitclaw
 ---
