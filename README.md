@@ -11,6 +11,7 @@
 * **Persistent Paper Trading:** A stateful simulator that allows users to "Execute Trades" and track their portfolio holdings in a beautiful glassmorphism dashboard.
 * **Interactive Price Matrix:** Dynamic charting powered by Chart.js to visualize the last 30 days of price action.
 * **Hybrid Architecture:** A decoupled Node.js/Express backend with a custom injection engine for a professional, lag-free UI experience.
+* **gitclaw Integration:** Fully compliant with the gitclaw SDK, allowing the entire repository to function as a pluggable AI agent definition.
 
 ---
 
@@ -54,15 +55,24 @@ To run the Quantum Quant agent locally, follow these steps:
     node server.js
     ```
     *Open `http://localhost:3000` in your browser.*
-
+5. **gitclaw Agent Mode (SDK)**
+   This repository is optimized for the gitclaw runtime. To run the agent via the SDK:
+   ```bash
+   npx gitclaw run [github.com/YOUR_USERNAME/quantum-quant-agent](https://github.com/YOUR_USERNAME/quantum-quant-agent)
+    ```
 ---
 
 ## 🤖 Agentic Architecture
 
-This project follows the strict **Soul/Rules/Skills** documentation standards for AI Agents:
-* **`agent.yaml`**: Defines the agent's identity, version, and core tools.
-* **`SOUL.md`**: Defines the "Quantum Oracle" persona—analytical, decisive, and objective.
-* **`RULES.md`**: Operational constraints to ensure financial data integrity and risk alignment.
+This project follows strict Soul/Rules/Tools documentation standards, ensuring the repository is the agent definition:
+* **agent.yaml:** The central manifest orchestrating identity, tools, and runtime requirements.
+* **SOUL.md:** Defines the "Quantum Quant" persona—analytical, decisive, and objective.
+
+* **RULES.md:** Operational guardrails and hard constraints to ensure financial data integrity.
+
+* **skills/:** Modularized logic files defining the agent's high-level capabilities.
+
+* **tools/:** Autonomous JavaScript functions that allow the agent to "grasp" and manipulate live market data.
 
 ---
 
