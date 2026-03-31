@@ -1,6 +1,7 @@
 # 🌌 Quantum Quant: AI-Powered Quantitative Agent
 
-**Quantum Quant**is an autonomous quantitative agent that redefines market analysis. It integrates high-frequency technical signals—including RSI and MACD—with the cognitive power of generative AI to deliver precise, data-backed execution strategies for the modern investor.
+**Quantum Quant**is an autonomous quantitative agent that redefines market analysis. It integrates high-frequency technical signals—including RSI and MACD—with the cognitive power of generative AI to deliver precise, data-backed execution strategies for the modern investor
+
 ---
 
 ## 🚀 Key Features
