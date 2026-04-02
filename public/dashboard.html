@@ -149,6 +149,8 @@
         }
 
         function toggleTheme() { const html = document.documentElement; html.classList.toggle('dark'); localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light'); }
+
+        // Initialize Chart.js with empty data (waiting to be filled by the API)
         document.addEventListener("DOMContentLoaded", function() {
             const ctx = document.getElementById('priceChart').getContext('2d');
             let gradient = ctx.createLinearGradient(0, 0, 0, 300);
