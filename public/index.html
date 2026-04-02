@@ -56,7 +56,18 @@
                 <label class="block text-xs font-mono text-slate-500 dark:text-slate-400 mb-1 uppercase text-[10px]">Target Asset</label>
                 <input type="text" name="ticker" placeholder="TICKER (e.g., AAPL)" required class="w-full bg-white dark:bg-[#0B0F19] border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:ring-1 focus:ring-blue-500 uppercase font-mono shadow-inner">
             </div>
-
+        
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-mono text-slate-500 dark:text-slate-400 mb-1 uppercase text-[10px]">Investment Amount ($)</label>
+                    <input type="number" name="principal" placeholder="1000" required class="w-full bg-white dark:bg-[#0B0F19] border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white font-mono shadow-inner">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-slate-500 dark:text-slate-400 mb-1 uppercase text-[10px]">Duration (Years)</label>
+                    <input type="number" name="years" placeholder="5" required class="w-full bg-white dark:bg-[#0B0F19] border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white font-mono shadow-inner">
+                </div>
+            </div>
+        
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-mono text-slate-500 dark:text-slate-400 mb-1 uppercase text-[10px]">Monthly In ($)</label>
@@ -67,7 +78,7 @@
                     <input type="number" name="expenses" placeholder="3000" required class="w-full bg-white dark:bg-[#0B0F19] border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white font-mono shadow-inner">
                 </div>
             </div>
-
+        
             <div>
                 <label class="block text-xs font-mono text-slate-500 dark:text-slate-400 mb-1 uppercase text-[10px]">Risk Matrix</label>
                 <select name="risk" required class="w-full bg-white dark:bg-[#0B0F19] border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white font-mono shadow-inner">
@@ -76,7 +87,7 @@
                     <option value="High">Gamma (Aggressive)</option>
                 </select>
             </div>
-
+        
             <div class="flex gap-3 mt-6">
                 <button type="submit" class="glow-button flex-1 bg-gradient-to-r from-blue-600 to-emerald-500 text-white font-bold text-lg py-4 rounded-xl shadow-lg transition-transform hover:-translate-y-1">
                     INITIALIZE ANALYSIS
