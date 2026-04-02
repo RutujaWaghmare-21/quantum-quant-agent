@@ -14,47 +14,31 @@ dotenv.config();
 const app = express();
 let portfolio = [];
 const PORT = process.env.PORT || 3000;
-
-// Allow the server to read JSON data sent from the frontend
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Serve the static HTML files from the "public" folder
 app.use(express.static(path.join(__dirname, 'public')));
-
-
 // ==========================================
 // 1. HTML PAGE ROUTES
 // ==========================================
-
-// The multi-compare page
 app.get('/compare', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'compare.html'));
 });
-
-// The chat interface page
 app.get('/chat_ui', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'result.html'));
 });
-
-
 // ==========================================
 // 2. API: MULTI-ASSET COMPARE
 // ==========================================
 app.post('/compare', async (req, res) => {
     const stocksInput = req.body.stocks || "";
     const tickers = stocksInput.split(',').map(s => s.trim().toUpperCase()).filter(s => s.length > 0);
-
     if (tickers.length === 0) return res.json({ error: "Please enter at least one valid stock ticker." });
-
     console.log(`[SYSTEM] Comparing assets: ${tickers.join(', ')}`);
     let results = [];
-
     try {
         const endDate = new Date();
         const startDate = new Date();
         startDate.setMonth(endDate.getMonth() - 6); // 6 Months back
-
         for (const ticker of tickers) {
             try {
                 const data = await yahooFinance.historical(ticker, { period1: startDate, period2: endDate, interval: '1d' });
@@ -62,8 +46,6 @@ app.post('/compare', async (req, res) => {
                     const startPrice = data[0].close;
                     const currentPrice = data[data.length - 1].close;
                     const returnPct = (((currentPrice - startPrice) / startPrice) * 100).toFixed(2);
-
-                    // Calculate basic volatility risk
                     const returns = [];
                     for(let i=1; i<data.length; i++) {
                         returns.push((data[i].close - data[i-1].close) / data[i-1].close);
@@ -71,9 +53,7 @@ app.post('/compare', async (req, res) => {
                     const mean = returns.reduce((a,b)=>a+b, 0) / returns.length;
                     const variance = returns.reduce((a,b)=>a + Math.pow(b - mean, 2), 0) / returns.length;
                     const riskPct = (Math.sqrt(variance) * Math.sqrt(252) * 100).toFixed(2); // Annualized volatility
-
                     let sentiment = returnPct > 5 ? "Positive" : returnPct < -5 ? "Negative" : "Neutral";
-
                     results.push({
                         stock: ticker,
                         current: currentPrice.toFixed(2),
@@ -133,18 +113,17 @@ app.post('/chat', async (req, res) => {
         res.status(500).json({ reply: "System error communicating with the AI grid." });
     }
 });
-
 // ==========================================
 // 4. MAIN ENGINE: THE QUANT ANALYSIS
 // ==========================================
 app.post('/analyze', async (req, res) => {
     const ticker = req.body.ticker ? req.body.ticker.toUpperCase() : "AAPL";
+    const principal = parseFloat(req.body.principal) || 0;
+    const years = parseInt(req.body.years) || 5;
     const income = parseFloat(req.body.income) || 0;
     const expenses = parseFloat(req.body.expenses) || 0;
     const risk = req.body.risk || "Medium";
     const savings = Math.max(0, income - expenses);
-
-    console.log(`[SYSTEM] Running Quantum Analysis on: ${ticker}`);
 
     try {
         const endDate = new Date();
@@ -164,58 +143,50 @@ app.post('/analyze', async (req, res) => {
 
         const rsiValues = RSI.calculate({ values: closePrices, period: 14 });
         const latestRsi = rsiValues[rsiValues.length - 1] || 50;
-
         const macdValues = MACD.calculate({ values: closePrices, fastPeriod: 12, slowPeriod: 26, signalPeriod: 9, SimpleMAOscillator: false, SimpleMASignal: false });
         const latestMacd = macdValues[macdValues.length - 1] || { histogram: 0 };
 
         let decision = "HOLD 📊";
         let confidence = 65;
+        let targetPrice; 
+
         if (latestMacd.histogram > 0 && latestRsi < 60) {
             decision = "BUY 📈";
             confidence = 85;
+            targetPrice = currentPrice * 1.12; 
         } else if (latestRsi > 70 && latestMacd.histogram < 0) {
             decision = "SELL 📉";
             confidence = 88;
+            targetPrice = currentPrice * 0.90; 
+        } else {
+            targetPrice = currentPrice * 1.04; 
         }
 
-        let aiExplanation = "<p class='text-slate-400'>AI analysis currently offline.</p>";
+        let aiExplanation = "<p class='text-slate-400'>AI analysis offline.</p>";
         const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
         if (OPENROUTER_API_KEY && OPENROUTER_API_KEY.length > 10) {
-            const prompt = `You are Quantum Oracle, a highly decisive quantitative trading AI. User Profile: Free Cash Flow: $${savings} | Risk: ${risk}. System Verdict: ${decision} for ${ticker}. Indicators: RSI is ${latestRsi.toFixed(2)}, MACD Histogram is ${latestMacd.histogram.toFixed(2)}. Write exactly 3 punchy bullet points explaining why this is a smart move based on the indicators.`;
-
+            const prompt = `You are Quantum Oracle. Starting with $${principal}, investing $${savings}/mo for ${years}y. Risk: ${risk}. Verdict: ${decision} for ${ticker}. RSI: ${latestRsi.toFixed(2)}, MACD: ${latestMacd.histogram.toFixed(2)}. Give 3 short, punchy investment bullet points.`;
             try {
                 const aiResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST", 
-                    headers: { 
-                        "Authorization": `Bearer ${OPENROUTER_API_KEY}`, 
-                        "Content-Type": "application/json",
-                        "HTTP-Referer": "http://localhost:3000",
-                        "X-Title": "Quantum Quant"
-                    },
-                    body: JSON.stringify({ 
-                        model: "openrouter/auto",
-                        messages: [{ role: "user", content: prompt }] 
-                    })
+                    headers: { "Authorization": `Bearer ${OPENROUTER_API_KEY}`, "Content-Type": "application/json" },
+                    body: JSON.stringify({ model: "openrouter/auto", messages: [{ role: "user", content: prompt }] })
                 });
-
                 const aiData = await aiResponse.json();
-                
                 if (aiData.choices && aiData.choices[0]) {
-                    aiExplanation = aiData.choices[0].message.content
-                        .split('\n')
-                        .filter(line => line.trim() !== '')
-                        .map(line => `<li class="mb-2">${line.replace(/^- /, '').replace(/^\d+\. /, '')}</li>`)
-                        .join('');
-                    aiExplanation = `<ul class="list-disc pl-5 font-mono text-sm text-slate-300">${aiExplanation}</ul>`;
-                } else if (aiData.error) {
-                    console.error("[ORACLE] OpenRouter Error:", aiData.error);
-                    aiExplanation = `<p class='text-amber-500 text-xs font-mono'>⚠️ AI Error: ${aiData.error.message}</p>`;
-                }
-            } catch (aiErr) {
-                console.error("[ORACLE] API Call Failed:", aiErr.message);
-                aiExplanation = `<p class='text-red-400 text-xs font-mono'>⚠️ Connection Failed: ${aiErr.message}</p>`;
-            }
+    aiExplanation = aiData.choices[0].message.content
+        .split('\n')
+        .filter(line => line.trim() !== '')
+        .map(line => {
+            return `<li class="mb-3 p-3 rounded-lg bg-slate-50/80 dark:bg-slate-800/40 border-l-4 border-blue-500 text-slate-800 dark:text-slate-100 shadow-sm list-none">
+                ${line.replace(/^- /, '').replace(/^\d+\. /, '')}
+            </li>`;
+        })
+        .join('');
+    aiExplanation = `<ul class="space-y-2 p-1">${aiExplanation}</ul>`;
+}
+            } catch (e) { console.error(e); }
         }
 
         let resultHtmlPath = path.join(__dirname, 'public', 'dashboard.html');
@@ -233,11 +204,9 @@ app.post('/analyze', async (req, res) => {
 
             document.getElementById('confidence-bar').style.width = "${confidence}%";
             document.getElementById('confidence-text').textContent = "${confidence}%";
-            if(${confidence} > 75) document.getElementById('confidence-bar').className = "h-full bg-emerald-500";
-            else if(${confidence} < 50) document.getElementById('confidence-bar').className = "h-full bg-red-500";
 
             document.getElementById('spot-price').textContent = "${currentPrice.toFixed(2)}";
-            document.getElementById('model-target').textContent = "${(currentPrice * (decision.includes('BUY') ? 1.05 : 0.95)).toFixed(2)}";
+            document.getElementById('model-target').textContent = "$${targetPrice.toFixed(2)}"; // FIXED: Now uses calculated targetPrice
             
             document.getElementById('ind-rsi').textContent = "${latestRsi.toFixed(2)}";
             document.getElementById('ind-macd').textContent = "${latestMacd.histogram.toFixed(2)}";
@@ -257,18 +226,15 @@ app.post('/analyze', async (req, res) => {
         res.send(htmlPage + injectionScript);
 
     } catch (error) {
-        console.error("Error analyzing stock:", error);
-        res.status(500).send("<h2 style='color:red; text-align:center;'>System Error</h2>");
+        console.error(error);
+        res.status(500).send("System Error");
     }
 });
-// ---------- THE TRADE SIMULATOR ----------
 app.post('/paper_trade', (req, res) => {
     const { stock, price, shares } = req.body;
-    
     if (!stock || !price) {
         return res.status(400).json({ message: "Invalid trade data." });
     }
-
     const newTrade = {
         stock: stock,
         buy_price: parseFloat(price),
@@ -276,21 +242,16 @@ app.post('/paper_trade', (req, res) => {
         total_cost: (parseFloat(price) * (parseInt(shares) || 10)).toFixed(2),
         date: new Date().toLocaleString()
     };
-
     portfolio.push(newTrade);
-    console.log(`[BANK] Trade Executed: Bought ${newTrade.shares} units of ${stock}`);
-    
+    console.log(`[BANK] Trade Executed: Bought ${newTrade.shares} units of ${stock}`);  
     res.json({ 
         status: "success", 
         message: `Successfully bought ${newTrade.shares} shares of ${stock} at $${price}!` 
     });
 });
-
-// Route for the frontend to see the current portfolio
 app.get('/get_portfolio', (req, res) => {
     res.json(portfolio);
 });
-// Start the server
 app.listen(PORT, () => {
-    console.log(`🚀 Quantum Quant Server running at http://localhost:${PORT}`);
+    console.log(`Quantum Quant Server running at http://localhost:${PORT}`);
 });
