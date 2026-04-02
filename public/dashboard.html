@@ -101,7 +101,7 @@
                     </div>
 
                     <div id="ai-explanation" class="prose prose-slate dark:prose-invert max-w-none text-sm leading-relaxed overflow-y-auto max-h-[180px]">
-                        <p class="text-slate-400 animate-pulse">Awaiting neural analysis...</p>
+                        <p class="text-slate-600 dark:text-slate-400 animate-pulse font-mono">Initializing neural synthesis pathways...</p>
                     </div>
                 </div>
             </div>
@@ -149,8 +149,6 @@
         }
 
         function toggleTheme() { const html = document.documentElement; html.classList.toggle('dark'); localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light'); }
-
-        // Initialize Chart.js with empty data (waiting to be filled by the API)
         document.addEventListener("DOMContentLoaded", function() {
             const ctx = document.getElementById('priceChart').getContext('2d');
             let gradient = ctx.createLinearGradient(0, 0, 0, 300);
